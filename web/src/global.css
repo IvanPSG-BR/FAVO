@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-dark: oklch(20% 0.04 40);
+  --color-brand-light: oklch(85% 0.06 70);
+  --color-brand-gold: oklch(75% 0.15 85);
+  --color-brand-white: oklch(98% 0.01 60);
+
+  --font-serif: "Crimson Pro", "Lora", serif;
+  --font-sans: "Inter", "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+:root {
+  --text: var(--color-brand-dark);
+  --text-h: oklch(15% 0.05 40);
+  --bg: var(--color-brand-white);
+  --border: oklch(20% 0.04 40 / 0.15);
+  --surface: var(--color-brand-light);
+  --accent: var(--color-brand-gold);
+  --accent-foreground: oklch(20% 0.04 40);
+
+  --font-main: var(--font-sans);
+  --font-heading: var(--font-serif);
+
+  font: 18px/150% var(--font-main);
+  color: var(--text);
+  background: var(--bg);
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text-h);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: oklch(85% 0.02 60);
+    --text-h: oklch(95% 0.01 60);
+    --bg: oklch(15% 0.02 40);
+    --border: oklch(98% 0.01 60 / 0.1);
+    --surface: oklch(20% 0.03 40);
+    --accent: oklch(80% 0.12 85);
+    --accent-foreground: oklch(10% 0.02 40);
+  }
+}
+

@@ -11,3 +11,51 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum SEASON {
+  SPRING
+  SUMMER
+  AUTUMN
+  WINTER
+}
+
+enum CATEGORY {
+  HARVEST
+  MINING
+  FORAGE
+  FISHING
+  COMBAT
+}
+
+enum QUALITY {
+  NORMAL
+  SILVER
+  GOLD
+  IRIDIUM
+}
+
+model items {
+  id              Int      @id @default(autoincrement())
+  transactionsId  Int?
+  name            String
+  quality         QUALITY  @default(NORMAL)
+  quantity        Int
+  totalPrice      Int
+  category        CATEGORY
+  transactions    transactions? @relation(fields: [transactionsId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime
+}
+
+model transactions {
+  id         Int     @id @default(autoincrement())
+  title      String
+  totalValue Int
+  day        Int
+  season     SEASON
+  items      items[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}

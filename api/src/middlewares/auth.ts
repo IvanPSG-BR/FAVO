@@ -1,5 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 
 export default async function authMiddleware(req: FastifyRequest, rep: FastifyReply) {
-  // TODO
+  const adminSecret = req.headers['x-api-key']
+
+  if (!adminSecret || adminSecret != process.env.ADMIN_SECRET_KEY) {
+    return rep.code(401).send("Credencial Inválida")
+  }
 }

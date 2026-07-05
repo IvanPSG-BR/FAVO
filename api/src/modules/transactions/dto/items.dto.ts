@@ -5,7 +5,8 @@ const categoryEnum = z.enum([
   "MINING",
   "FORAGE",
   "FISHING",
-  "COMBAT"
+  "COMBAT",
+  "MISC"
 ])
 
 const qualityEnum = z.enum([
@@ -21,7 +22,7 @@ const itemBaseSchema = z.object({
   name: z.string(),
   quality: qualityEnum,
   quantity: z.int().min(1),
-  totalPrice: z.int(),
+  totalPrice: z.int().min(1),
   category: categoryEnum,
   createdAt: z.date(),
   updatedAt: z.date()
@@ -33,5 +34,5 @@ export const itemCreateSchema = itemBaseSchema.omit({
   updatedAt: true
 })
 
-export type itemBaseDTO = z.infer<typeof itemBaseSchema>
-export type itemCreateDTO = z.infer<typeof itemCreateSchema>
+export type ItemBaseDTO = z.infer<typeof itemBaseSchema>
+export type ItemCreateDTO = z.infer<typeof itemCreateSchema>

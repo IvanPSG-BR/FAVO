@@ -4,11 +4,18 @@ FAVO (ou FinAgro Vale do Orvalho) é um MVP de um sistema FinTech e AgroTech apl
 
 ## Tecnologias do Backend
 
-[TODO]
+- Linguagem: TypeScript
+- Framework: Fastify
+- Banco de Dados: PostgreSQL
+- ORM: Prisma
+- Validação: Zod
 
 ## Tecnologias do Frontend
 
-[TODO]
+- Linguagem: TypeScript
+- Bundler: Vite
+- Framework de Estilização: TailwindCSS
+- Ícones: Lucide Icons (CDN)
 
 ## Fluxo da Aplicação
 

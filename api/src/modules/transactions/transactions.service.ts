@@ -1,16 +1,16 @@
-import PrismaDB from "../../db/prisma";
-import { TransactionCreateDTO, TransactionUpdateDTO } from "./dto/transactions.dto";
+import PrismaDB from "../../db/prisma.js";
+import { TransactionCreateDTO, TransactionUpdateDTO } from "./dto/transactions.dto.js";
+import ITransactionsService from "./transactions.service.interface.js";
 
-export default class TransactionsService {
-  private db
+export default class TransactionsService implements ITransactionsService {
+  private readonly db
   constructor(db: typeof PrismaDB) {
     this.db = db
   }
 
   public async create(data: TransactionCreateDTO) {
-    const totalTransactionValue = data.items.reduce((sum, item) => sum + item.totalPrice, 0)
-    
-    return await this.db.transactions.create({
+    const totalTransactionValue = data.items.reduce((sum, item) => sum + item.totalPrice, 0) // Estudar sobre posteriormente essa linha, pois não compreendo ela totalmente ainda
+    const query = await this.db.transactions.create({
       data: {
         title: data.title,
         totalValue: totalTransactionValue,
@@ -26,28 +26,41 @@ export default class TransactionsService {
         items: true
       }
     })
+
+    if (!query) { throw new Error("Transação não pôde ser criada.") }
+    return query
   }
 
   public async list(limit: number = 10, offset: number = 0) {
-    return await this.db.transactions.findMany({
+    const query = await this.db.transactions.findMany({
       take: limit,
-      skip: offset
+      skip: offset,
+      include: {
+        items: true
+      }
     })
+
+    if (!query) { throw new Error("Transações não Encontradas") }
+    return query
   }
 
   public async find(id: number) {
-    return await this.db.transactions.findUnique({
+    const query = await this.db.transactions.findUnique({
       where: {
         id: id
+      },
+      include: {
+        items: true
       }
     })
+
+    if (!query) { throw new Error("Transação não Encontrada") }
+    return query
   }
 
   public async update(id: number, data: TransactionUpdateDTO) {
     await this.ensureNotDeleted(id)
-
-    return await this.db.$transaction(async (tx) => {
-      // 1. Deleta TODOS os itens vinculados a essa transação
+    const query = await this.db.$transaction(async (tx) => {
       await tx.items.deleteMany({
         where: { transactionsId: id }
       })
@@ -71,12 +84,14 @@ export default class TransactionsService {
         }
       })
     })
+
+    if (!query) { throw new Error("Transação não pôde ser atualizada") }
+    return query
   }
 
   public async delete(id: number) {
     await this.ensureNotDeleted(id)
-
-    return await this.db.transactions.update({
+    const query = await this.db.transactions.update({
       where: {
         id: id
       },
@@ -85,6 +100,9 @@ export default class TransactionsService {
         deletedAt: new Date()
       }
     })
+
+    if (!query) { throw new Error("Transação não pôde ser deletada") }
+    return query.isDeleted
   }
 
   private async ensureNotDeleted(id: number) {
@@ -98,10 +116,12 @@ export default class TransactionsService {
     })
 
     if (!status) {
-      throw new Error("Transação não encontrada."), null
+      throw new Error("Transação não encontrada.")
     }
     if (status.isDeleted) {
-      throw new Error("Transações deletadas não podem ser modificadas."), null
+      throw new Error("Transações deletadas não podem ser modificadas.")
     }
+
+    return
   }
 }

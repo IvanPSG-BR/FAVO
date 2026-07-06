@@ -1,24 +1,13 @@
 import z from "zod";
+import { CATEGORY, QUALITY } from "../../../generated/prisma/client.js";
+import { items } from "../../../generated/prisma/client.js";
 
-const categoryEnum = z.enum([
-  "HARVEST",
-  "MINING",
-  "FORAGE",
-  "FISHING",
-  "COMBAT",
-  "MISC"
-])
-
-const qualityEnum = z.enum([
-  "NORMAL",
-  "SILVER",
-  "GOLD",
-  "IRIDIUM"
-])
+const categoryEnum = z.enum(CATEGORY)
+const qualityEnum = z.enum(QUALITY)
 
 const itemBaseSchema = z.object({
   id: z.int(),
-  transactionId: z.int(),
+  transactionsId: z.int(),
   name: z.string(),
   quality: qualityEnum,
   quantity: z.int().min(1),
@@ -26,13 +15,14 @@ const itemBaseSchema = z.object({
   category: categoryEnum,
   createdAt: z.date(),
   updatedAt: z.date()
-})
+}) satisfies z.ZodType<items>
 
 export const itemCreateSchema = itemBaseSchema.omit({
   id: true,
+  transactionsId: true,
   createdAt: true,
   updatedAt: true
-})
+}) // "itemCreateSchema" apenas por não pensar em um nome mais descritivo
 
 export type ItemBaseDTO = z.infer<typeof itemBaseSchema>
 export type ItemCreateDTO = z.infer<typeof itemCreateSchema>

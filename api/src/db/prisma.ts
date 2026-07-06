@@ -1,9 +1,11 @@
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "../generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-const pool = new Pool({ database: process.env.DATABASE_URL })
+const dbUrl = process.env.DATABASE_URL ?? "GAMBIARRA A SER ALTERADA"
+
+const pool = new Pool({ connectionString: dbUrl })
 const adapter = new PrismaPg(pool)
-const db = new PrismaClient({ adapter })
+const db = new PrismaClient({ adapter: adapter })
 
 export default db

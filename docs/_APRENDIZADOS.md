@@ -1,5 +1,6 @@
 # Aprendizados
 
+---
 ## Validação de Dados e Schemas
 
 ### 1. Método `.extend()` do Zod
@@ -16,6 +17,7 @@ Utilizando o Prisma Client, é possível importar e usar no código os enums e m
 
 PS: Os modelos não devem ser usados "diretamente", mas convertidos em tipos zod com o método `.ZodType<Modelo>`, o qual *não podem* ser diretamente aplicados à(s) variável(is) do(s) schema(s), pois faz com que perca as propriedades do `z.Object`; ao invés disso, o ideal é que se use `satisfies z.ZodType<Modelo>` ao final da linha.
 
+---
 ## Classes
 
 ### 1. Implementação de Interfaces
@@ -33,6 +35,7 @@ Quando é passado um método para o Fastify, a função é "solta" da classe, o 
 1. Criar um bind para "forçar de volta" o método à classe (visualmente desagradável, mas resolve): `fastify.post('/users', userController.create.bind(userController))`
 2. Utilizar Arrow Functions ao invés de funções padrão para criar os métodos da classe: `const create = async (request: FastifyRequest<{ Body: CreateDTO }>, reply: FastifyReply) => { ... }`
 
+---
 ## Regras de Negócio
 
 ### 1. Total da Transação
@@ -45,12 +48,13 @@ Outros aspectos ainda devem ser alterados futuramente (cálculo automático com 
 
 ### 2. Atomicidade
 
-Para mantimento da simplificação do MVP, o projeto gerencia os itens inteiramente através das transações. Todos os registros de item são diretamente ligados à uma transação, e uma transação não existe sem itens.
+Para mantimento da simplificação do MVP, o projeto deve gerenciar os itens inteiramente através das transações. Todos os registros de item devem ser diretamente ligados à uma transação, e uma transação não pode existir sem itens.
 
-Ou seja: para garantir que todos os itens enviados na transação (financeira) sejam devidamente manipulados no request, foram utilizadas as transações de Banco de Dados para manter a consistência.
+Ou seja: para garantir que todos os itens enviados na transação (financeira) sejam devidamente manipulados no request, são necessárias as transações de Banco de Dados para manter a consistência.
 
-Se algum item não for criado num `POST` por qualquer motivo, a consulta não se completa e o banco volta ao estado anterior.
+Nesse caso, se algum item não for criado num `POST` por qualquer motivo, a consulta não se completa e o banco volta ao estado anterior.
 
+---
 ## Banco de Dados
 
 ### 1. Transações no Prisma
@@ -125,6 +129,9 @@ Além disso, o Prisma **não aceita** update em massa para relações 1:N (um-pa
 PS (1): Existe ainda a estratégia com `upsert`, que é a mais performática e que mantém maior integridade, porém também é a mais complexa e de difícil manutenção
 PS (2): Para a primeira solução, é importante que o client reenvie TODOS os registros da tabela relacionada, mesmo os que não foram atualizados
 
+Decisões acerca da modelagem de dados [AQUI](./backend/MODELAGEM.md)
+
+---
 ## Fastify
 
 ### Formato da Rota

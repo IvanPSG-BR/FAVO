@@ -34,6 +34,6 @@ E já que a autenticação é feita dessa forma, o responsável por ela é um ú
 
 ## 7. Usuário Único
 
-Assim como no tópico anterior, essa decisão foi tomada para focar no desenvolvimento do que realmente importa primeiro. Logo: não existe tabela de usuários: se a chave bater com a existente no `.env`, você está autorizado.
+Assim como no tópico anterior, essa decisão foi tomada para focar no desenvolvimento do que realmente importa primeiro. Logo: não existe tabela de usuários: se a chave bater com a existente no `.env` do servidor, você está autorizado.
 
 E falando em autorização, obviamente o único usuário possui permissão para tudo. Se ele for "deslogado", a única coisa que o client pode requisitar é o `/health` (a não ser que reenvie a API KEY).

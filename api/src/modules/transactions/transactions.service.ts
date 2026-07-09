@@ -1,15 +1,33 @@
 import PrismaDB from "../../db/prisma.js";
+import AppError from "../../errors/app-logic.error.js";
 import { TransactionCreateDTO, TransactionUpdateDTO } from "./dto/transactions.dto.js";
 import ITransactionsService from "./transactions.service.interface.js";
+import { ERROR_TAGS } from "../../errors/dto/default-error.interface.js";
 
 export default class TransactionsService implements ITransactionsService {
   private readonly db
+  private readonly prismaUnknownError
+  private readonly prismaNotFoundError
   constructor(db: typeof PrismaDB) {
     this.db = db
+    this.prismaUnknownError = new AppError(500, {
+      name: "internalServerError",
+      type: ERROR_TAGS.DATABASE,
+      message: "Não foi possível realizar a operação. Conferir logs da API para mais detalhes.",
+      identifierCode: "UNKNOWN_ERROR"
+    })
+    this.prismaNotFoundError = new AppError(404, {
+      name: "notFound",
+      type: ERROR_TAGS.DATABASE,
+      message: "Transação não encontrada. O Client enviou o id corretamente? Conferir logs da API para mais detalhes.",
+      identifierCode: "TRANSACTION_NOT_FOUND"
+    })
   }
 
   public async create(data: TransactionCreateDTO) {
-    const totalTransactionValue = data.items.reduce((sum, item) => sum + item.totalPrice, 0) // Estudar sobre posteriormente essa linha, pois não compreendo ela totalmente ainda
+    const totalTransactionValue = data.items.reduce((sum, item) => {
+      return sum + item.totalPrice
+    }, 0)
     const query = await this.db.transactions.create({
       data: {
         title: data.title,
@@ -27,7 +45,6 @@ export default class TransactionsService implements ITransactionsService {
       }
     })
 
-    if (!query) { throw new Error("Transação não pôde ser criada.") }
     return query
   }
 
@@ -40,7 +57,6 @@ export default class TransactionsService implements ITransactionsService {
       }
     })
 
-    if (!query) { throw new Error("Transações não Encontradas") }
     return query
   }
 
@@ -54,7 +70,9 @@ export default class TransactionsService implements ITransactionsService {
       }
     })
 
-    if (!query) { throw new Error("Transação não Encontrada") }
+    if (!query) {
+      throw this.prismaNotFoundError
+    }
     return query
   }
 
@@ -85,7 +103,9 @@ export default class TransactionsService implements ITransactionsService {
       })
     })
 
-    if (!query) { throw new Error("Transação não pôde ser atualizada") }
+    if (!query) { 
+      throw this.prismaNotFoundError
+    }
     return query
   }
 
@@ -101,7 +121,7 @@ export default class TransactionsService implements ITransactionsService {
       }
     })
 
-    if (!query) { throw new Error("Transação não pôde ser deletada") }
+    if (!query) { throw this.prismaNotFoundError }
     return query.isDeleted
   }
 
@@ -116,12 +136,16 @@ export default class TransactionsService implements ITransactionsService {
     })
 
     if (!status) {
-      throw new Error("Transação não encontrada.")
+      throw this.prismaNotFoundError
     }
     if (status.isDeleted) {
-      throw new Error("Transações deletadas não podem ser modificadas.")
+      throw new AppError(400, {
+        name: "badRequest",
+        type: ERROR_TAGS.APP,
+        message: "Transações alteradas não podem ser modificadas.",
+        identifierCode: "MODIFY_RECORD_NOT_ALLOWED"
+      })
     }
-
     return
   }
 }

@@ -14,8 +14,8 @@
 
 ## Urgentes
 
-1. [ ] Mensagens de erro retornados ao client padronizadas e **específicas** | #M
-2. [ ] Middleware para captura de erros | #F
+1. [X] Mensagens de erro retornados ao client padronizadas e **específicas** | #M
+2. [X] Middleware para captura de erros | #F
 
 ## Pendentes
 

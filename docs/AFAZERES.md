@@ -14,12 +14,12 @@
 
 ## Urgentes
 
-1. [ ] Mensagens de erro retornados ao client padronizadas e **específicas** | #M
-2. [ ] Middleware para captura de erros | #F
+1. [X] Mensagens de erro retornados ao client padronizadas e **específicas** | #M
+2. [X] Middleware para captura de erros | #F
 
 ## Pendentes
 
-1. [ ] Parâmetros de URL para filtragem das transações | #F
+1. [X] Parâmetros de URL para filtragem das transações | #M
 2. [ ] Containerização da API e do Website para execução simplificada | #F
 
 ## Pós MVP

@@ -17,6 +17,7 @@ enum SEASON {
   SUMMER
   AUTUMN
   WINTER
+  ALL
 }
 
 enum CATEGORY {

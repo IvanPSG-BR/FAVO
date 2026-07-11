@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
-import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import { FastifyPluginAsync, FastifyServerOptions, FastifyRequest, FastifyReply } from 'fastify'
 import env from '@fastify/env'
+import errorHandler from './middlewares/error-handler.js'
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
 
@@ -24,6 +25,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     }
   }
   await fastify.register(env, { schema: envSchema, dotenv: true })
+  fastify.setErrorHandler((error: unknown, req: FastifyRequest, rep: FastifyReply) => errorHandler(error, req, rep))
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins

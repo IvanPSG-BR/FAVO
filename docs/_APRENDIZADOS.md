@@ -131,10 +131,14 @@ PS (2): Para a primeira solução, é importante que o client reenvie TODOS os r
 
 Decisões acerca da modelagem de dados [AQUI](./backend/MODELAGEM.md)
 
+### 2. Tipos de Cláusulas no Prisma
+
+As cláusulas dentro do objeto passado em `args` numa operação do Prisma possuem tipos, permitindo com que elas sejam construídas separadamente da operação seguindo um contrato rígido, o que impede erros e possibilita [certas coisas](./backend/MODELAGEM.md#all-em-seasons-solucao) serem feitas.
+
 ---
 ## Fastify
 
-### Formato da Rota
+### 1. Formato da Rota
 
 Sempre utilizar o genérico do `fastify.[MÉTODO]` para definir o que deve vir da requisição, dessa forma:
 

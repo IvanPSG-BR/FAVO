@@ -19,7 +19,7 @@
 
 ## Pendentes
 
-1. [ ] Parâmetros de URL para filtragem das transações | #F
+1. [X] Parâmetros de URL para filtragem das transações | #M
 2. [ ] Containerização da API e do Website para execução simplificada | #F
 
 ## Pós MVP

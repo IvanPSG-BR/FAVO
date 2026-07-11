@@ -2,20 +2,14 @@ import PrismaDB from "../../db/prisma.js";
 import AppError from "../../errors/app-logic.error.js";
 import { TransactionCreateDTO, TransactionUpdateDTO } from "./dto/transactions.dto.js";
 import ITransactionsService from "./transactions.service.interface.js";
-import { ERROR_TAGS } from "../../errors/dto/default-error.interface.js";
+import { ERROR_TAGS } from "../../errors/dto/default-error.dto.js";
+import TransactionsFilterDTO from "./dto/transactions-filters.dto.js";
 
 export default class TransactionsService implements ITransactionsService {
   private readonly db
-  private readonly prismaUnknownError
   private readonly prismaNotFoundError
   constructor(db: typeof PrismaDB) {
     this.db = db
-    this.prismaUnknownError = new AppError(500, {
-      name: "internalServerError",
-      type: ERROR_TAGS.DATABASE,
-      message: "Não foi possível realizar a operação. Conferir logs da API para mais detalhes.",
-      identifierCode: "UNKNOWN_ERROR"
-    })
     this.prismaNotFoundError = new AppError(404, {
       name: "notFound",
       type: ERROR_TAGS.DATABASE,
@@ -48,16 +42,74 @@ export default class TransactionsService implements ITransactionsService {
     return query
   }
 
-  public async list(limit: number = 10, offset: number = 0) {
-    const query = await this.db.transactions.findMany({
+  public async list(limit: number = 10, offset: number = 0, filters?: TransactionsFilterDTO) {
+    if (!filters) {
+      return await this.db.transactions.findMany({
+        take: limit,
+        skip: offset,
+        include: {
+          items: true
+        }
+      })
+    }
+    if (filters.season == "ALL") {
+      return await this.db.transactions.findMany({
+        take: limit,
+        skip: offset,
+        include: {
+          items: true
+        },
+        where: {
+          day: {
+            gte: filters.dayRange[0],
+            lte: filters.dayRange[1]
+          },
+          totalValue: {
+            gte: filters.valueRange[0],
+            lte: filters.valueRange[1]
+          },
+          isDeleted: {
+            equals: filters.deleted
+          }
+        },
+        orderBy: {
+          day: filters.orderedBy.day,
+          totalValue: filters.orderedBy.totalValue,
+          createdAt: filters.orderedBy.createdAt,
+          updatedAt: filters.orderedBy.updatedAt
+        }
+      })      
+    }
+    return await this.db.transactions.findMany({
       take: limit,
       skip: offset,
       include: {
         items: true
+      },
+      where: {
+        day: {
+          gte: filters.dayRange[0],
+          lte: filters.dayRange[1]
+        },
+        season: {
+          equals: filters.season
+        },
+        totalValue: {
+          gte: filters.valueRange[0],
+          lte: filters.valueRange[1]
+        },
+        isDeleted: {
+          equals: filters.deleted
+        }
+      },
+      orderBy: {
+        day: filters.orderedBy.day,
+        totalValue: filters.orderedBy.totalValue,
+        createdAt: filters.orderedBy.createdAt,
+        updatedAt: filters.orderedBy.updatedAt
       }
     })
-
-    return query
+    // Essa foi a melhor maneira que encontrei para incluir filtros na requisição
   }
 
   public async find(id: number) {

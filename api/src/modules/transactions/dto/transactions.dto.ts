@@ -9,7 +9,7 @@ const transactionTypeEnum = z.enum(TRANSACTION_TYPE)
 const transactionBaseSchema = z.object({
   id: z.int(),
   title: z.string(),
-  totalValue: z.int().min(1),
+  totalValue: z.int().min(1).max(999999999),
   day: z.int().min(1).max(28),
   season: seasonEnum,
   type: transactionTypeEnum,
@@ -17,7 +17,7 @@ const transactionBaseSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   deletedAt: z.date().nullable()
-}).extend({ items: z.array(itemCreateSchema) }) satisfies z.ZodType<transactions>
+}).extend({ items: z.array(itemCreateSchema).max(30) }) satisfies z.ZodType<transactions>
 
 const transactionCreateSchema = transactionBaseSchema.omit({
   id: true,
